@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/imagens">
+        <file>LogoNova-15344c19.png</file>
+        <file>images.jpg</file>
+        <file>Le_o_brabo.webp</file>
+        <file>img.png</file>
+    </qresource>
+</RCC>

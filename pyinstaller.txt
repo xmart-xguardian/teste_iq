@@ -1,0 +1,1 @@
+pyinstaller --onefile --windowed --name XGuardianAdmin --icon xguardian_ico.ico --add-data "mulher_ti.jpg;." --add-data "logo_cabeca.png;." --add-data "xguardian_ico.ico;." --add-data "spinner.gif;." --clean main.py
