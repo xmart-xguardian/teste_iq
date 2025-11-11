@@ -20,7 +20,7 @@ jobs:
           echo "🔽 Baixando Sonatype IQ CLI..."
           curl -L -o nexus-iq-cli.jar https://download.sonatype.com/clm/scanner/latest.jar
           echo "✅ Versão do CLI:"
-          java -jar nexus-iq-cli.jar --version || true
+          java -jar nexus-iq-cli.jar --version 
 
       - name: Run IQ Server scan
         run: |
