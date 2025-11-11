@@ -1,0 +1,58 @@
+name: IQ Server Scan (manual test)
+
+on:
+  push:
+    branches:
+      - "**"
+
+permissions:
+  contents: read
+
+jobs:
+  iq-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Zip workspace
+        run: |
+          ZIP_NAME="repo-to-scan-${{ github.sha }}.zip"
+          zip -r "$ZIP_NAME" . -x ".git/*" "node_modules/*"
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+
+      - name: Download Nexus IQ CLI
+        run: |
+          curl -L -o nexus-iq-cli.jar https://download.sonatype.com/cli/nexus-iq-cli-latest.jar
+          java -jar nexus-iq-cli.jar --version || true
+
+      - name: Run IQ Server scan
+        run: |
+          TARGET="$PWD/$ZIP_NAME"
+          RESULT_FILE="$PWD/iq-result-${{ github.sha }}.json"
+
+          IQ_SERVER_URL="https://xmartsolutions.iqxp.ngrok.dev"
+          IQ_USER="Au6eYkY6"
+          IQ_PASS="Q8BEoZcVGnmGm3iUZMMfEzQoB4gRud8wtdFD7eYvILLh"
+          IQ_APP_ID="git_hub_actions_scans"
+
+
+          java -jar nexus-iq-cli.jar \
+            -s "$IQ_SERVER_URL" \
+            -a "$IQ_USER:$IQ_PASS" \
+            -i "$IQ_APP_ID" \
+            evaluate "$TARGET" \
+            --result-file "$RESULT_FILE" \
+            --fail-on-policy-warnings \
+            --stage "build"
+
+          echo "RESULT_FILE=$RESULT_FILE" >> $GITHUB_ENV
+
+      - name: Upload IQ result JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-iq-result
+          path: ${{ env.RESULT_FILE }}
